@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react'
 function figmaAssetResolver() {
   return {
     name: 'figma-asset-resolver',
-    resolveId(id) {
+    resolveId(id: string) {
       if (id.startsWith('figma:asset/')) {
         const filename = id.replace('figma:asset/', '')
         return path.resolve(__dirname, 'src/assets', filename)
@@ -27,6 +27,22 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src/app'),
+      '@agents': path.resolve(__dirname, './src/agents'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+    },
+  },
+  build: {
+    target: 'esnext',
+    minify: 'terser',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          'agents': ['./src/agents/index.ts'],
+        },
+      },
     },
   },
 })
